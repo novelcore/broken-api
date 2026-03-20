@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       labels:
-    driveby.io/version: "2.0.0"
+        driveby.io/version: "2.0.0"
         app: broken-api
     spec:
       containers:
