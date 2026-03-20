@@ -1,0 +1,48 @@
+name: DriveBy Propagate
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'manifests/**'
+permissions:
+  contents: write
+jobs:
+  propagate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Propagate to dev
+        run: |
+          git config user.name "driveby-bot"
+          git config user.email "driveby-bot@users.noreply.github.com"
+          git checkout environment/dev-next 2>/dev/null || git checkout -b environment/dev-next
+          # Clean branch root
+          git rm -rf . 2>/dev/null || true
+          # Copy manifests directory from main to branch root
+          git checkout main -- manifests/
+          mv manifests/* . 2>/dev/null || true
+          rm -rf manifests/
+          git add -A
+          git diff --cached --quiet || git commit -m "propagate from main to dev"
+          git push --force origin environment/dev-next
+          git checkout main
+      - name: Propagate to staging
+        run: |
+          git config user.name "driveby-bot"
+          git config user.email "driveby-bot@users.noreply.github.com"
+          git checkout environment/staging-next 2>/dev/null || git checkout -b environment/staging-next
+          # Clean branch root
+          git rm -rf . 2>/dev/null || true
+          # Copy manifests directory from main to branch root
+          git checkout main -- manifests/
+          mv manifests/* . 2>/dev/null || true
+          rm -rf manifests/
+          git add -A
+          git diff --cached --quiet || git commit -m "propagate from main to staging"
+          git push --force origin environment/staging-next
+          git checkout main
