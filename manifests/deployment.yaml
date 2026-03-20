@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: broken-api
+  labels:
+    app: broken-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broken-api
+  template:
+    metadata:
+      labels:
+        app: broken-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/novelcore/broken-api:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: API_KEY
+              value: "driveby-test-key-2024"
+          livenessProbe:
+            httpGet:
+              path: /test/health
+              port: 8000
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /test/health
+              port: 8000
+            initialDelaySeconds: 3
+      imagePullSecrets:
+        - name: ghcr-creds
