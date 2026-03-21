@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/novelcore/broken-api:a0ecfc5c4172385798062682b236276c758c29b4
+          image: ghcr.io/novelcore/broken-api:latest
           ports:
             - containerPort: 8000
           env:
